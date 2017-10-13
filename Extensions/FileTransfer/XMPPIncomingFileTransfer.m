@@ -10,7 +10,6 @@
 #import "XMPPIncomingFileTransfer.h"
 #import "XMPPConstants.h"
 #import "XMPPLogging.h"
-#import "idn-int.h"
 #import "NSNumber+XMPP.h"
 #import "NSData+XMPP.h"
 
@@ -377,10 +376,10 @@ NSString *const XMPPIncomingFileTransferErrorDomain = @"XMPPIncomingFileTransfer
   NSXMLElement *si = iq.childElement;
   if (!si || ![si.xmlns isEqualToString:XMPPSINamespace]) return NO;
 
-  NSXMLElement *file = (DDXMLElement *) [si childAtIndex:0];
+  NSXMLElement *file = (NSXMLElement *) [si childAtIndex:0];
   if (!file || ![file.xmlns isEqualToString:XMPPSIProfileFileTransferNamespace]) return NO;
 
-  NSXMLElement *feature = (DDXMLElement *) [si childAtIndex:1];
+  NSXMLElement *feature = (NSXMLElement *) [si childAtIndex:1];
   return !(!feature || ![feature.xmlns isEqualToString:XMPPFeatureNegNamespace]);
 
   // Maybe there should be further verification, but I think this should be
@@ -695,7 +694,7 @@ NSString *const XMPPIncomingFileTransferErrorDomain = @"XMPPIncomingFileTransfer
 
         for (NSXMLElement *streamhost in streamhosts) {
           NSString *host = [streamhost attributeStringValueForName:@"host"];
-          uint16_t port = (gl_uint16_t) [streamhost attributeUInt32ValueForName:@"port"];
+          uint16_t port = [streamhost attributeUInt32ValueForName:@"port"];
 
           NSError *err;
           if (![_asyncSocket connectToHost:host onPort:port error:&err]) {

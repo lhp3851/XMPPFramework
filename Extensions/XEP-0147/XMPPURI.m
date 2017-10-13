@@ -35,6 +35,9 @@
 }
 
 - (NSString*) uriString {
+    if (!self.jid) {
+        return nil;
+    }
     NSMutableString *uriString = [NSMutableString stringWithFormat:@"xmpp:%@", self.jid.bare];
     if (self.queryAction) {
         [uriString appendFormat:@"?%@", self.queryAction];
@@ -68,11 +71,11 @@
     }
     
     NSArray *uriComponents = [uriString componentsSeparatedByString:@":"];
-    NSString *scheme = nil;
+    //NSString *scheme = nil;
     NSString *jidString = nil;
     
     if (uriComponents.count >= 2) {
-        scheme = uriComponents[0];
+        //scheme = uriComponents[0];
         NSString *path = uriComponents[1];
         if ([path containsString:@"?"]) {
             NSArray *queryComponents = [path componentsSeparatedByString:@"?"];

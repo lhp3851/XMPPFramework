@@ -14,7 +14,6 @@
 #import "XMPPLogging.h"
 #import "XMPPOutgoingFileTransfer.h"
 #import "XMPPIDTracker.h"
-#import "idn-int.h"
 #import "XMPPConstants.h"
 #import "NSNumber+XMPP.h"
 #import "NSData+XMPP.h"
@@ -188,7 +187,7 @@ NSString *const XMPPOutgoingFileTransferErrorDomain = @"XMPPOutgoingFileTransfer
         _transferState = XMPPOFTStateStarted;
 
         if (_pastRecipients[_recipientJID.full]) {
-          uint8_t methods = (gl_uint8_t) [_pastRecipients[_recipientJID.full] unsignedIntValue];
+          uint8_t methods = [_pastRecipients[_recipientJID.full] unsignedIntValue];
 
           if (methods & XMPPFileTransferStreamMethodBytestreams) {
             _streamMethods |= XMPPFileTransferStreamMethodBytestreams;
@@ -1148,10 +1147,10 @@ NSString *const XMPPOutgoingFileTransferErrorDomain = @"XMPPOutgoingFileTransfer
         }
 
         NSXMLElement *si = iq.childElement;
-        NSXMLElement *feature = (DDXMLElement *) [si childAtIndex:0];
-        NSXMLElement *x = (DDXMLElement *) [feature childAtIndex:0];
-        NSXMLElement *field = (DDXMLElement *) [x childAtIndex:0];
-        NSXMLElement *value = (DDXMLElement *) [field childAtIndex:0];
+        NSXMLElement *feature = (NSXMLElement *) [si childAtIndex:0];
+        NSXMLElement *x = (NSXMLElement *) [feature childAtIndex:0];
+        NSXMLElement *field = (NSXMLElement *) [x childAtIndex:0];
+        NSXMLElement *value = (NSXMLElement *) [field childAtIndex:0];
 
         if ([[value stringValue] isEqualToString:XMPPBytestreamsNamespace]) {
           XMPPLogVerbose(@"The recipient has confirmed the use of SOCKS5. Starting transfer...");
@@ -1408,7 +1407,7 @@ NSString *const XMPPOutgoingFileTransferErrorDomain = @"XMPPOutgoingFileTransfer
 
         NSError *err;
         NSString *proxyHost = [proxy attributeStringValueForName:@"host"];
-        uint16_t proxyPort = (gl_uint16_t) [proxy attributeUnsignedIntegerValueForName:@"port"];
+        uint16_t proxyPort = [proxy attributeUnsignedIntegerValueForName:@"port"];
 
         if (![_asyncSocket connectToHost:proxyHost onPort:proxyPort error:&err]) {
           [self failWithReason:@"Unable to connect to proxy." error:err];
@@ -1501,7 +1500,7 @@ NSString *const XMPPOutgoingFileTransferErrorDomain = @"XMPPOutgoingFileTransfer
     struct ifaddrs *curr;
 
     for (curr = interfaces; curr; curr = curr->ifa_next) {
-      if (!curr->ifa_flags & IFF_UP) {
+      if (!(curr->ifa_flags & IFF_UP)) {
         continue;
       }
 
